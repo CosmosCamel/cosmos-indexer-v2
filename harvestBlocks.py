@@ -112,8 +112,8 @@ def scanStats(height):
                 #write block time to file
                 j.write(blockData["block"]["header"]["time"]+'\n')
                 for i in range(len(txs)):
-                    #ignore amino longer than 30k
-                    if len(txs[i]) <= 32766:
+                    #ignore amino longer than 10k
+                    if len(txs[i]) <= 10000:
                         #write amino to file
                         j.write(txs[i]+'\n')
         totalTx = totalTx + len(txs)
