@@ -23,7 +23,7 @@ import threading
 from threading import *
 from queue import Queue
 
-# create custom worker daemon for a single thread
+# create custom worker as daemon
 class Worker(Thread):
     def __init__(self, tasks):
         Thread.__init__(self)
@@ -130,6 +130,7 @@ def scanStats(height):
 
 def startPool(data):
     try:
+        #these are not logical processes so you dont have to match them with your physical threads, but a decent cap is 100 per every running instance
         pool = ThreadPool(100)
         pool.map(scanStats,data)
         pool.wait_completion()
@@ -148,7 +149,12 @@ if __name__ == "__main__":
     data.remove(4136531)
     #shuffle in random order to distribute load over the 3 archive nodes
     random.shuffle(data)
+    #create folder named blocks if it doesnt exist
+    if(not(os.path.isdir('blocks'))):
+        os.makedirs('blocks')
     print(Fore.WHITE+Style.BRIGHT+"\nNumber of blocks to query: "+Fore.GREEN+Style.BRIGHT+str(len(data))+"\n")
+    #timestamp of runtime start
     startTime = time.time()
+    #launch the threadpool
     startPool(data)
     print(Fore.WHITE+Style.BRIGHT+"Total number of processed Transactions: "+Fore.GREEN+Style.BRIGHT+str(totalTx)+"\n")
