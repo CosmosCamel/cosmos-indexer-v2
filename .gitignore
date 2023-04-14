@@ -1,0 +1,3 @@
+blocks/*.json
+__pycache__/
+*.json
