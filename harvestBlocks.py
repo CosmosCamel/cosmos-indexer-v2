@@ -65,7 +65,7 @@ startTime = 0
 #FinishedBlocks
 blocksNo = 0
 
-def fetchBlockData(height):
+def fetchBlockDataByHeight(height):
     headers = {
         'Host': 'rpc-archive.junonetwork.io',
         'Connection': 'keep-alive',
@@ -89,9 +89,9 @@ def fetchBlockData(height):
         a = requests.get("https://rpc-v2-archive.junonetwork.io/block?height="+str(height),headers=headers,timeout=10)
         if a.status_code == 200:
             return json.loads(a.text)['result']
-    fetchBlockData(height)
+    fetchBlockDataByHeight(height)
 
-def scanStats(height):
+def downloadBlockByHeight(height):
     try:
         global totalTx
         global blocksNo
@@ -99,10 +99,10 @@ def scanStats(height):
         #change terminal title instead of CLI stdout
         os.system('title Blocks: '+str(blocksNo)+' - Txs: '+str(totalTx)+' - BPM: '+str(int(round(blocksNo/((time.time()-startTime)/60)))))
         #check if height was already done, avoiding conflict of more than one thread executing the same input
-        if (os.path.isfile('blocks/'+str(height)+'.json')):
+        if (os.path.isfile('blocks/'+str(height))):
             return
         #fetch block Data
-        blockData = fetchBlockData(height)
+        blockData = fetchBlockDataByHeight(height)
         #get transactions
         txs = blockData["block"]["data"]["txs"]
         #if block has transactions
@@ -127,7 +127,7 @@ def startPool(data):
     try:
         #these are not logical processes so you dont have to match them with your physical threads, but a decent cap is 100 per every running instance
         pool = ThreadPool(100)
-        pool.map(scanStats,data)
+        pool.map(downloadBlockByHeight,data)
         pool.wait_completion()
         pool.close() 
         pool.join()
