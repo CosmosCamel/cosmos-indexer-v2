@@ -76,32 +76,27 @@ def fetchBlockData(height):
         'Accept-Language': 'en-US,en;q=0.9'
     }
     if height > 4136532:
-        a = requests.get("https://rpc-archive.junonetwork.io/block?height="+str(height),headers=headers, timeout=10)
+        a = requests.get("https://rpc-archive.junonetwork.io/block?height="+str(height),headers=headers,timeout=10)
         if a.status_code == 200:
             return json.loads(a.text)['result']
-        else:
-            fetchBlockData(height)
     elif height > 2578097:
         headers['Host'] = 'rpc-v3-archive.junonetwork.io'
         a = requests.get("https://rpc-v3-archive.junonetwork.io/block?height="+str(height),headers=headers,timeout=10)
         if a.status_code == 200:
             return json.loads(a.text)['result']
-        else:
-            fetchBlockData(height)
     else:
         headers['Host'] = 'rpc-v2-archive.junonetwork.io'
         a = requests.get("https://rpc-v2-archive.junonetwork.io/block?height="+str(height),headers=headers,timeout=10)
         if a.status_code == 200:
             return json.loads(a.text)['result']
-        else:
-            fetchBlockData(height)
+    fetchBlockData(height)
 
 def scanStats(height):
     try:
         global totalTx
         global blocksNo
         global datablock
-        #change terminal title instead of CLI printing
+        #change terminal title instead of CLI stdout
         os.system('title Blocks: '+str(blocksNo)+' - Txs: '+str(totalTx)+' - BPM: '+str(int(round(blocksNo/((time.time()-startTime)/60)))))
         #check if height was already done, avoiding conflict of more than one thread executing the same input
         if (os.path.isfile('blocks/'+str(height)+'.json')):
